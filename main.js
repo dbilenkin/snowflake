@@ -5,15 +5,15 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 ctx.fillStyle = "rgba(255,255,255,1)";
 
-const SIZE = 20;
-const GEN = 30;
+const SIZE = 2;
+const GEN = 100;
 const SPEED = 10;
 const ORIGIN = {
   x: parseInt(300 / SIZE), 
   y: parseInt(300 / SIZE)
 }
 
-const thresholds = [1,2,3,4];
+// const thresholds = [3,4];
 const oddNeighbors = [
   {
     r: -1,
@@ -98,8 +98,9 @@ function grow() {
   // console.log(edges);
   
   if (gen % 1 === 0) {
-    threshold = thresholds[Math.floor(Math.random() * 4)];
-    threshold = 3;
+    threshold = Math.random() / (gen / 10) + .05;
+    // threshold = 4;
+
   }
   gen++;
   draw();
@@ -116,7 +117,6 @@ function grow() {
       edges.push(edge);
     }
   });
-  countNeighbors();
   setTimeout(() => grow(), SPEED);
 }
 
@@ -126,7 +126,9 @@ function visitNeighbors(edge, neighbors) {
     let row = edge.row + n.r;
     let col = edge.col + n.c;
     if (!grid[row][col]) {
-      if (threshold >= edge.n) {
+      let depth = Math.floor(gen/20) + 1
+      let neighborCount = countNeighborsDeep(row, col, depth);
+      if (threshold >= neighborCount) {
         addEdge(row, col, 1);
       } else {
         noNeighbors = false;
@@ -136,19 +138,41 @@ function visitNeighbors(edge, neighbors) {
   return noNeighbors;
 }
 
-function countNeighbors() {
-  edges.forEach((edge, i) => {
-    const neighbors = edge.row % 2 === 1 ? oddNeighbors : evenNeighbors;
+function countNeighborsDeep(row, col, depth) {
+  // console.log("--------" + row + ", " + col);
+  let neighborCount = 0;
+  let total = 0;
+  for (let r = row - depth; r <= row + depth; r++) {
+    let a1 = 0; //odd-row adjustment
+    // console.log("\n");
+    let a2 = Math.abs(r - row); //row size adjustment??
+    let lA = Math.ceil(a2/2); //left adjustment
+    let rA = a2 - lA; //right adjustment
+    for (let c = col - depth + lA; c <= col + depth - rA; c++) {
+      total++;
+      if (row % 2 === 0 && r % 2 === 1) {
+        a1 = 1;
+      }
+      // console.log((c - a1) + " ");
+      if (grid[r][c - a1] && grid[r][c - a1].drawn) {
+        neighborCount++;
+      }
+    }
+  }
+  return neighborCount/total;
+}
+
+function countNeighbors(row, col) {
+    const neighbors = row % 2 === 1 ? oddNeighbors : evenNeighbors;
     let nCount = 0;
     neighbors.forEach(n => {
-      let row = edge.row + n.r;
-      let col = edge.col + n.c;
-      if (grid[row][col]) {
+      let r = row + n.r;
+      let c = col + n.c;
+      if (grid[r][c] && grid[r][c].drawn) {
         nCount++;
       }
-      edge.n = nCount;
     });
-  });
+    return nCount;
 }
 
 function getXY(row, col) {
