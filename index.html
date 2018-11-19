@@ -10,6 +10,30 @@
   <body>
     <canvas id="canvas" width="600" height="600"></canvas>
     <div><input type="button" value="Stop" onClick="toggle(this)" /></div>
+    <div>
+      <label for="threshold">Threshold</label>
+      <input
+        type="range"
+        id="threshold"
+        name="threshold"
+        min="0"
+        max="100"
+        value="1"
+        step="1"
+      />
+    </div>
+    <div>
+        <label for="depth">Depth</label>
+        <input
+          type="range"
+          id="depth"
+          name="depth"
+          min="0"
+          max="100"
+          value="10"
+          step="1"
+        />
+      </div>
     <script src="main.js"></script>
   </body>
 </html>

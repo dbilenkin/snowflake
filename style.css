@@ -1,5 +1,16 @@
-body { margin: 0px; }
+body {
+  margin: 0px;
+}
+
 #canvas {
   border: 1px solid #666666;
-  background: black;
+  background: darkblue;
+}
+
+#threshold {
+  width: 500px;
+}
+
+#depth {
+  width: 500px;
 }
